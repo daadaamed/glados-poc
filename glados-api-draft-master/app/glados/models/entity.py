@@ -11,7 +11,10 @@ from glados.models.abc import BaseModel
 class Entity(db.Model, BaseModel):
     __tablename__ = "entities"
     __table_args__ = (
-        Index("entities_room_id_idx", "room_id"),)
+        Index("entities_room_id_idx", "room_id"),
+        Index("entities_type_idx", "type"),
+        Index("entities_status_idx", "status"),
+    )
 
     to_json_filter = ["room"]
 
