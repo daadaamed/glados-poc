@@ -1,5 +1,5 @@
-import { createStore } from "vuex"
 import coreApi from "@/providers/core-api"
+import { createStore } from "vuex"
 
 export default createStore({
   state: {
@@ -9,7 +9,8 @@ export default createStore({
       room: "",
       status: ""
     },
-    loading: false
+    loading: false,
+    error: null,
   },
   getters: {
     rooms(state) {
@@ -35,6 +36,7 @@ export default createStore({
     setLoading(state, value) {
       state.loading = value
     },
+    setError(state, e) { state.error = e },
     setEntities(state, payload) {
       state.entities = payload
     },
@@ -68,6 +70,24 @@ export default createStore({
       } finally {
         commit("setLoading", false)
       }
+    },
+
+    async createEntity({ dispatch, commit }, payload) {
+      commit("setError", null)
+      await coreApi.glados.createEntity(payload)
+      await dispatch("loadEntities")
+    },
+
+    async updateEntity({ dispatch, commit }, { id, payload }) {
+      commit("setError", null)
+      await coreApi.glados.updateEntity(id, payload)
+      await dispatch("loadEntities")
+    },
+
+    async deleteEntity({ dispatch, commit }, id) {
+      commit("setError", null)
+      await coreApi.glados.deleteEntity(id)
+      await dispatch("loadEntities")
     }
   },
   modules: {},

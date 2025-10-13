@@ -2,7 +2,12 @@
   <div class="flex flex-col gap-6">
     <div class="flex items-center justify-between">
       <span class="text-indigo-600 font-bold text-2xl">Dashboard</span>
-      <div class="text-sm text-gray-500">{{ totalText }}</div>
+      <div class="flex items-center gap-3">
+        <button
+          class="border px-3 py-2 rounded-md hover:bg-gray-50"
+          @click="openCreate">Add entity</button>
+        <div class="text-sm text-gray-500">{{ totalText }}</div>
+      </div>
     </div>
 
     <FiltersBar
@@ -12,23 +17,16 @@
       :filters="filters"
       @change="onFilterChange"
       @clear="onClear" />
+
     <div
       v-if="loading"
-      class="rounded-md border p-6 text-gray-600">
-      Loading entities…
-    </div>
-
+      class="rounded-md border p-6 text-gray-600">Loading entities…</div>
     <div
       v-else-if="error"
-      class="rounded-md border p-6 text-red-600">
-      Failed to load entities. Please try again.
-    </div>
-
+      class="rounded-md border p-6 text-red-600">Failed to load entities. Please try again.</div>
     <div
       v-else-if="filteredEntities.length === 0"
-      class="rounded-md border p-6 text-gray-600">
-      No results. Try adjusting the filters.
-    </div>
+      class="rounded-md border p-6 text-gray-600">No results. Try adjusting the filters.</div>
 
     <div
       v-else
@@ -36,8 +34,20 @@
       <EntityCard
         v-for="e in filteredEntities"
         :key="e.id"
-        :entity="e" />
+        :entity="e"
+        @edit="openEdit"
+        @delete="confirmDelete" />
     </div>
+
+    <!-- Modal -->
+    <EntityForm
+      v-if="showForm"
+      :entity="editing"
+      :types="types"
+      :statuses="statuses"
+      :rooms="rooms"
+      @cancel="closeForm"
+      @submit="saveEntity" />
   </div>
 </template>
 
@@ -45,12 +55,20 @@
 import { mapGetters, mapState } from "vuex"
 import EntityCard from "@/components/dashboard/EntityCard.vue"
 import FiltersBar from "@/components/dashboard/FiltersBar.vue"
+import EntityForm from "@/components/dashboard/EntityForm.vue"
 
 export default {
   name: "Dashboard",
   components: {
     FiltersBar,
-    EntityCard 
+    EntityCard,
+    EntityForm 
+  },
+  data() {
+    return {
+      showForm: false,
+      editing: null,
+    }
   },
   created() {
     this.$store.dispatch("loadEntities")
@@ -67,16 +85,32 @@ export default {
     }
   },
   methods: {
-    onFilterChange({ key, value }) {
-      this.$store.commit("setFilter", {
-        key,
-        value 
-      })
-      this.$store.dispatch("loadEntities")
+    onFilterChange({ key, value }) { this.$store.commit("setFilter", {
+      key,
+      value 
+    }); this.$store.dispatch("loadEntities") },
+    onClear() { this.$store.commit("clearFilters"); this.$store.dispatch("loadEntities") },
+
+    openCreate() { this.editing = null; this.showForm = true },
+    openEdit(entity) { this.editing = entity; this.showForm = true },
+    closeForm() { this.showForm = false; this.editing = null },
+
+    async saveEntity(payload) {
+      if (this.editing) {
+        await this.$store.dispatch("updateEntity", {
+          id: this.editing.id,
+          payload 
+        })
+      } else {
+        await this.$store.dispatch("createEntity", payload)
+      }
+      this.closeForm()
     },
-    onClear() {
-      this.$store.commit("clearFilters")
-      this.$store.dispatch("loadEntities")
+
+    async confirmDelete(entity) {
+      if (window.confirm(`Delete "${entity.name}"?`)) {
+        await this.$store.dispatch("deleteEntity", entity.id)
+      }
     }
   }
 }
