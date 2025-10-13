@@ -49,20 +49,23 @@
       @cancel="closeForm"
       @submit="saveEntity" />
   </div>
+  <ChatTalkButton />
 </template>
 
 <script>
 import { mapGetters, mapState } from "vuex"
+import ChatTalkButton from "@/components/speech/ChatTalkButton.vue"
 import EntityCard from "@/components/dashboard/EntityCard.vue"
-import FiltersBar from "@/components/dashboard/FiltersBar.vue"
 import EntityForm from "@/components/dashboard/EntityForm.vue"
-
+import FiltersBar from "@/components/dashboard/FiltersBar.vue"
 export default {
   name: "Dashboard",
   components: {
     FiltersBar,
     EntityCard,
-    EntityForm 
+    EntityForm,
+    ChatTalkButton
+    
   },
   data() {
     return {
