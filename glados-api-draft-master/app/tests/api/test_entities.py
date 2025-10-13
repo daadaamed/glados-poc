@@ -61,7 +61,8 @@ def test_get_entities(client, entities, mocker):
             "type": "light",
             "status": "off",
             "value": None,
-            "created_at": mocker.ANY
+            "created_at": mocker.ANY,
+            "room": "Kitchen"
         },
         {
             "id": "00000000-0000-0000-0000-000000000002",
@@ -69,7 +70,8 @@ def test_get_entities(client, entities, mocker):
             "type": "light",
             "status": "on",
             "value": "200",
-            "created_at": mocker.ANY
+            "created_at": mocker.ANY,
+            "room": "Living Room"
         },
         {
             "id": "00000000-0000-0000-0000-000000000003",
@@ -77,7 +79,8 @@ def test_get_entities(client, entities, mocker):
             "type": "sensor",
             "status": "on",
             "value": "28",
-            "created_at": mocker.ANY
+            "created_at": mocker.ANY,
+            "room": "Living Room"
         }
     ]
 
@@ -93,7 +96,8 @@ def test_get_entities_with_type_filter(client, entities, mocker):
             "type": "sensor",
             "status": "on",
             "value": "28",
-            "created_at": mocker.ANY
+            "created_at": mocker.ANY,
+            "room": "Living Room"
         }
     ]
 
@@ -109,7 +113,8 @@ def test_get_entities_with_status_filter(client, entities, mocker):
             "type": "light",
             "status": "on",
             "value": "200",
-            "created_at": mocker.ANY
+            "created_at": mocker.ANY,
+            "room": "Living Room"
         },
         {
             "id": "00000000-0000-0000-0000-000000000003",
@@ -117,7 +122,8 @@ def test_get_entities_with_status_filter(client, entities, mocker):
             "type": "sensor",
             "status": "on",
             "value": "28",
-            "created_at": mocker.ANY
+            "created_at": mocker.ANY,
+            "room": "Living Room"
         }
     ]
 
@@ -133,7 +139,8 @@ def test_get_entities_with_room_filter(client, entities, mocker):
             "type": "light",
             "status": "off",
             "value": None,
-            "created_at": mocker.ANY
+            "created_at": mocker.ANY,
+            "room": "Kitchen"
         }
     ]
 
@@ -149,7 +156,8 @@ def test_get_entities_with_room_and_status_filters(client, entities, mocker):
             "type": "light",
             "status": "on",
             "value": "200",
-            "created_at": mocker.ANY
+            "created_at": mocker.ANY,
+            "room": "Living Room"
         },
         {
             "id": "00000000-0000-0000-0000-000000000003",
@@ -157,7 +165,8 @@ def test_get_entities_with_room_and_status_filters(client, entities, mocker):
             "type": "sensor",
             "status": "on",
             "value": "28",
-            "created_at": mocker.ANY
+            "created_at": mocker.ANY,
+            "room": "Living Room"
         }
     ]
 
@@ -170,3 +179,23 @@ def test_get_entities_with_invalid_status(client):
         "status": ["Must be one of: on, off, unavailable."]
     }}
 
+
+def test_get_entity_by_id(client, entities, mocker):
+    # Known entity id=1 from fixture
+    resp = client.get("/entities/00000000-0000-0000-0000-000000000001")
+    assert resp.status_code == 200
+    assert resp.json == {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "name": "Ceiling Light",
+        "type": "light",
+        "status": "off",
+        "value": None,
+        "created_at": mocker.ANY,
+        "room": "Kitchen"
+    }
+
+
+def test_get_entity_by_id_not_found(client):
+    resp = client.get("/entities/00000000-0000-0000-0000-0000000000aa")
+    assert resp.status_code == 404
+    assert resp.json == {"error": "not_found", "message": "Resource not found."}

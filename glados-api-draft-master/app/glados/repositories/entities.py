@@ -1,3 +1,4 @@
+from sqlalchemy.orm import joinedload
 from glados.models import Entity, Room
 
 
@@ -17,3 +18,6 @@ def get_entities(filters):
         query = query.join(Entity.room).filter(Room.name == room)
 
     return query
+
+def get_entity_by_id(entity_id):
+    return Entity.query.options(joinedload(Entity.room)).get(entity_id)
