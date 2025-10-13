@@ -1,9 +1,8 @@
 import BaseApi from "@/providers/BaseApi"
-import config from "@/app.config"
 
 class CoreApi extends BaseApi {
   get baseUrl() {
-    return config.baseApiUrl
+    return process.env.VUE_APP_CORE_API_URL || "http://localhost:5001"
   }
 }
 

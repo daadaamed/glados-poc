@@ -1,5 +1,5 @@
 import { createStore } from "vuex"
-import mockEntities from "@/mocks/entities"
+import coreApi from "@/providers/core-api"
 
 export default createStore({
   state: {
@@ -50,12 +50,21 @@ export default createStore({
     }
   },
   actions: {
-    // For now, load hardcoded data; next step: swap with API
-    async loadEntities({ commit }) {
+    async loadEntities({ commit, state }) {
+      commit("setLoading", true)
+      commit("setError", null)
       try {
-        commit("setEntities", mockEntities)
-      } catch (error) {
-        console.error("Failed to load entities:", error)
+        const params = {}
+        if (state.filters.type) params.type = state.filters.type
+        if (state.filters.room) params.room = state.filters.room
+        if (state.filters.status) params.status = state.filters.status
+
+        const data = await coreApi.glados.getEntities(params)
+        commit("setEntities", data)
+      } catch (err) {
+        console.error(err)
+        commit("setError", err?.data || err)
+        commit("setEntities", [])
       } finally {
         commit("setLoading", false)
       }
