@@ -3,7 +3,8 @@
     <div class="flex flex-col">
       <label class="text-xs text-gray-500 mb-1">Type</label>
       <select
-        class="border rounded-md px-3 py-2"
+        id="filter-type"
+        class="border rounded-md px-3 pr-10 py-3 h-11 text-base min-w-[170px]"
         :value="filters.type"
         @change="emitChange('type', $event.target.value)">
         <option value="">All</option>
@@ -19,7 +20,8 @@
     <div class="flex flex-col">
       <label class="text-xs text-gray-500 mb-1">Room</label>
       <select
-        class="border rounded-md px-3 py-2"
+        id="filter-room"
+        class="border rounded-md px-3 pr-10 py-3 h-11 text-base min-w-[170px]"
         :value="filters.room"
         @change="emitChange('room', $event.target.value)">
         <option value="">Toutes</option>
@@ -35,7 +37,8 @@
     <div class="flex flex-col">
       <label class="text-xs text-gray-500 mb-1">Status</label>
       <select
-        class="border rounded-md px-3 py-2"
+        id="filter-status"
+        class="border rounded-md px-3 pr-10 py-3 h-11 text-base min-w-[170px]"
         :value="filters.status"
         @change="emitChange('status', $event.target.value)">
         <option value="">All</option>
@@ -50,6 +53,7 @@
 
     <button
       class="ml-auto border px-3 py-2 rounded-md hover:bg-gray-50"
+      aria-label="Réinitialiser les filtres"
       @click="$emit('clear')">
       Reset filters
     </button>

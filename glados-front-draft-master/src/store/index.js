@@ -8,7 +8,8 @@ export default createStore({
       type: "",
       room: "",
       status: ""
-    }
+    },
+    loading: false
   },
   getters: {
     rooms(state) {
@@ -31,6 +32,9 @@ export default createStore({
     }
   },
   mutations: {
+    setLoading(state, value) {
+      state.loading = value
+    },
     setEntities(state, payload) {
       state.entities = payload
     },
@@ -38,13 +42,23 @@ export default createStore({
       state.filters[key] = value
     },
     clearFilters(state) {
-      state.filters = { type: "", room: "", status: "" }
+      state.filters = {
+        type: "",
+        room: "",
+        status: "" 
+      }
     }
   },
   actions: {
     // For now, load hardcoded data; next step: swap with API
-    loadEntities({ commit }) {
-      commit("setEntities", mockEntities)
+    async loadEntities({ commit }) {
+      try {
+        commit("setEntities", mockEntities)
+      } catch (error) {
+        console.error("Failed to load entities:", error)
+      } finally {
+        commit("setLoading", false)
+      }
     }
   },
   modules: {},

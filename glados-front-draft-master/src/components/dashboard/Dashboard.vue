@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-6">
     <div class="flex items-center justify-between">
       <span class="text-indigo-600 font-bold text-2xl">Dashboard</span>
-      <div class="text-sm text-gray-500">Total: {{ filtered.length }}</div>
+      <div class="text-sm text-gray-500">Total: {{ filteredEntities.length }}</div>
     </div>
 
     <FiltersBar
@@ -14,7 +14,12 @@
       @clear="onClear" />
 
     <div
-      v-if="filtered.length === 0"
+      v-if="loading"
+      class="text-center py-8 text-gray-500">
+      Chargement...
+    </div>
+    <div
+      v-if="filteredEntities.length === 0"
       class="rounded-md border p-6 text-gray-600">
       No entity found with the current filters.
     </div>
@@ -23,7 +28,7 @@
       v-else
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <EntityCard
-        v-for="e in filtered"
+        v-for="e in filteredEntities"
         :key="e.id"
         :entity="e" />
     </div>
@@ -45,11 +50,8 @@ export default {
     this.$store.dispatch("loadEntities")
   },
   computed: {
-    ...mapState(["filters"]),
+    ...mapState(["filters", "loading"]),
     ...mapGetters(["filteredEntities", "rooms", "types", "statuses"]),
-    filtered() {
-      return this.filteredEntities
-    }
   },
   methods: {
     onFilterChange({ key, value }) {
