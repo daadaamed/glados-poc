@@ -250,3 +250,15 @@ def test_update_entity_invalid_type(client, entities):
     resp = client.put(f"/entities/{eid}", json={"type": "nope"})
     assert resp.status_code == 422
     assert resp.json == {"errors": {"type": ["Must be one of: sensor, light, switch, multimedia, air_conditioner."]}}
+
+def test_delete_entity(client, entities):
+    eid = "00000000-0000-0000-0000-000000000003"  # Thermometer
+    resp = client.delete(f"/entities/{eid}")
+    assert resp.status_code == 204
+    # ensure gone
+    resp2 = client.get(f"/entities/{eid}")
+    assert resp2.status_code == 404
+
+def test_delete_entity_not_found(client):
+    resp = client.delete("/entities/00000000-0000-0000-0000-0000000000aa")
+    assert resp.status_code == 404

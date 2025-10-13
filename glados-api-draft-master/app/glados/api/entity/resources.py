@@ -1,6 +1,6 @@
 from flask import request
 from flask_restful import Resource
-from glados.repositories.entities import get_entities, get_entity_by_id, update_entity, create_entity
+from glados.repositories.entities import get_entities, get_entity_by_id, update_entity, create_entity, delete_entity
 from marshmallow import ValidationError
 
 from glados.api.entity.serializers import EntitiesRequestSerializer, EntityResponseSerializer
@@ -49,3 +49,10 @@ class EntityAPI(Resource):
                 raise ValidationError({"room": ["Unknown room."]})
             raise
         return EntityResponseSerializer().dump(entity), 200
+    
+    def delete(self, entity_id):
+        entity = get_entity_by_id(entity_id)
+        if not entity:
+            return {"message": "Resource not found.", "error": "not_found"}, 404
+        delete_entity(entity)
+        return "", 204

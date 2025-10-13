@@ -59,3 +59,8 @@ def update_entity(entity, data):
     with transaction():
         db.session.add(entity)
     return entity
+
+
+def delete_entity(entity):
+    with transaction():
+        db.session.delete(entity)
