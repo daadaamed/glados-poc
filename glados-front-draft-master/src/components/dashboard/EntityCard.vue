@@ -12,7 +12,7 @@
 
     <div class="text-sm text-gray-600 space-y-1 mt-1 flex-1">
       <div v-if="entity.value !== null">Value: <span class="font-medium">{{ entity.value }}</span></div>
-      <div>Room: <span class="font-medium">{{ entity.room }}</span></div>
+      <div v-if="entity.room !== null">Room: <span class="font-medium">{{ entity.room }}</span></div>
     </div>
 
     <div class="pt-3 mt-auto flex items-center justify-between gap-2">
