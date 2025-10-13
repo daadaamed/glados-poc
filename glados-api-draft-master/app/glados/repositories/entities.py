@@ -43,3 +43,19 @@ def create_entity(data):
     with transaction():
         db.session.add(entity)
     return entity
+
+def update_entity(entity, data):
+    room_name = data.get("room")
+    if room_name is not None:
+        room = _get_room_by_name(room_name)
+        if room_name and not room:
+            raise ValueError("room_not_found")
+        entity.room_id = room.id if room else None
+
+    for key in ("name", "type", "status", "value"):
+        if key in data:
+            setattr(entity, key, data[key])
+
+    with transaction():
+        db.session.add(entity)
+    return entity

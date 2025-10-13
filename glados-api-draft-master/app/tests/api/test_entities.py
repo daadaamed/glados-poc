@@ -230,3 +230,23 @@ def test_create_entity_room_not_found(client):
     resp = client.post("/entities", json=payload)
     assert resp.status_code == 422
     assert resp.json == {"errors": {"room": ["Unknown room."]}}
+
+def test_update_entity(client, entities):
+    eid = "00000000-0000-0000-0000-000000000002"  # Lamp
+    payload = {"status": "off", "value": "150", "room": "Kitchen"}
+    resp = client.put(f"/entities/{eid}", json=payload)
+    assert resp.status_code == 200
+    assert resp.json["status"] == "off"
+    assert resp.json["value"] == "150"
+    assert resp.json["room"] == "Kitchen"
+
+def test_update_entity_not_found(client):
+    resp = client.put("/entities/00000000-0000-0000-0000-0000000000aa", json={"name": "X"})
+    assert resp.status_code == 404
+    assert resp.json == {"error": "not_found", "message": "Resource not found."}
+
+def test_update_entity_invalid_type(client, entities):
+    eid = "00000000-0000-0000-0000-000000000001"
+    resp = client.put(f"/entities/{eid}", json={"type": "nope"})
+    assert resp.status_code == 422
+    assert resp.json == {"errors": {"type": ["Must be one of: sensor, light, switch, multimedia, air_conditioner."]}}
