@@ -13,7 +13,7 @@
     <div class="text-sm text-gray-600 space-y-1">
       <div v-if="entity.value !== null">Value : <span class="font-medium">{{ entity.value }}</span></div>
       <div>Room : <span class="font-medium">{{ entity.room }}</span></div>
-      <div class="text-xs text-gray-400">Created : {{ entity.created_at }}</div>
+      <div class="text-xs text-gray-400">Last updated : {{ formattedDate }}</div>
     </div>
   </div>
 </template>
@@ -37,6 +37,22 @@ export default {
         air_conditioner: "❄️"
       }
       return map[this.entity.type] || "🔧"
+    },
+    formattedDate() {
+      const now = new Date()
+      const created = new Date(this.entity.created_at)
+      const diffMs = now - created
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  
+      if (diffDays === 0) return "today"
+      if (diffDays === 1) return "yesterday"
+      if (diffDays < 30) return `${diffDays} days ago`
+      if (diffDays < 365) {
+        const months = Math.floor(diffDays / 30)
+        return `${months} months ago`
+      }
+      const years = Math.floor(diffDays / 365)
+      return `${years} ${years > 1 ? "years" : "year"} ago`
     },
     statusBadgeClass() {
       const base = "text-xs px-2 py-1 rounded-full capitalize"
