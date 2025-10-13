@@ -24,10 +24,25 @@
     <div
       v-else-if="error"
       class="rounded-md border p-6 text-red-600">Failed to load entities. Please try again.</div>
+    <!-- No entities in DB at all (unfiltered total) -->
     <div
-      v-else-if="filteredEntities.length === 0"
-      class="rounded-md border p-6 text-gray-600">No results. Try adjusting the filters.</div>
+      v-else-if="!loading && !error && totalAll === 0"
+      class="flex flex-col items-center justify-center text-center text-gray-600 rounded-md border p-10 min-h-[40vh]">
 
+      <div class="text-2xl font-semibold text-gray-700 mb-2">No entities yet</div>
+      <p class="max-w-md">
+        You don’t have any entities. Click
+        <span class="font-medium">“Add entity”</span> to create your first one.
+        When you’re ready, tap the talking button in the bottom-right to
+        <span class="font-medium">listen to your entities</span>.
+      </p>
+
+      <button
+        class="mt-6 border px-4 py-2 rounded-md hover:bg-gray-50"
+        @click="openCreate">
+        Add entity
+      </button>
+    </div>
     <div
       v-else
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
