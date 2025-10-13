@@ -77,14 +77,16 @@ export default {
     this.$store.dispatch("loadEntities")
   },
   computed: {
-    ...mapState(["filters", "loading", "error"]),
+    ...mapState(["filters", "loading", "error", "totalAll"]),
     ...mapGetters(["filteredEntities", "rooms", "types", "statuses"]),
     totalCount() { return this.$store.state.entities.length },
+    onCountShown() { return this.filteredEntities.filter(e => e.status === "on").length },
     totalText() {
       const shown = this.filteredEntities.length
-      const total = this.totalCount
-      const noun = shown === 1 ? "entity" : "entities"
-      return `Showing ${shown} of ${total} ${noun}`
+      const total = this.totalAll
+      const onShown = this.onCountShown
+      const entitiesWord = shown === 1 ? "entity" : "entities"
+      return `Viewing ${shown} of ${total} ${entitiesWord} • ${onShown} on`
     }
   },
   methods: {

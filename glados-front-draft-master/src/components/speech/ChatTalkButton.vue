@@ -69,8 +69,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
 import * as tts from "@/utils/tts"
+import { mapGetters } from "vuex"
 
 export default {
   name: "ChatTalkButton",

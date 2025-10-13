@@ -13,16 +13,18 @@
     <div class="text-sm text-gray-600 space-y-1 mt-1 flex-1">
       <div v-if="entity.value !== null">Value: <span class="font-medium">{{ entity.value }}</span></div>
       <div>Room: <span class="font-medium">{{ entity.room }}</span></div>
-      <div class="text-xs text-gray-400">Last updated: {{ formattedDate }}</div>
     </div>
 
-    <div class="pt-3 flex gap-2">
-      <button
-        class="border px-3 py-1 rounded-md hover:bg-gray-50"
-        @click="$emit('edit', entity)">Edit</button>
-      <button
-        class="border px-3 py-1 rounded-md hover:bg-red-50 text-red-600"
-        @click="$emit('delete', entity)">Delete</button>
+    <div class="pt-3 mt-auto flex items-center justify-between gap-2">
+      <span class="text-xs text-gray-400">Updated: {{ formattedDate }}</span>
+      <div class="flex gap-2">
+        <button
+          class="border px-3 py-1 rounded-md hover:bg-gray-50"
+          @click="$emit('edit', entity)">Edit</button>
+        <button
+          class="border px-3 py-1 rounded-md hover:bg-red-50 text-red-600"
+          @click="$emit('delete', entity)">Delete</button>
+      </div>
     </div>
   </div>
 </template>

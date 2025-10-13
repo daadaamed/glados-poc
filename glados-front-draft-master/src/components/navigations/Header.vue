@@ -1,5 +1,8 @@
 <template>
-  <div class="flex items-center justify-between w-full px-5">
+  <div
+    class="flex items-center justify-between w-full px-5 cursor-pointer select-none"
+    @click="goHome"
+    aria-label="Home">
     <Logo />
     <div class="text-lg flex gap-5">
       <span
@@ -41,7 +44,10 @@ export default {
   methods: {
     goTo(name) {
       this.$router.push({ name })
-    }
+    },
+    goHome() {
+      window.location.reload()
+    },
   }
 }
 </script>

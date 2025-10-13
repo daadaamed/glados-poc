@@ -4,7 +4,8 @@
       <label class="text-xs text-gray-500 mb-1">Type</label>
       <select
         id="filter-type"
-        class="border rounded-md px-3 pr-10 py-3 h-11 text-base min-w-[170px]"
+        class="border rounded-md px-3 pr-10 py-2 h-11 min-w-[170px] text-sm w-full
+               sm:px-3 sm:pr-10 sm:py-3 sm:h-11 sm:text-base"
         :value="filters.type"
         @change="emitChange('type', $event.target.value)">
         <option value="">All</option>
@@ -21,10 +22,11 @@
       <label class="text-xs text-gray-500 mb-1">Room</label>
       <select
         id="filter-room"
-        class="border rounded-md px-3 pr-10 py-3 h-11 text-base min-w-[170px]"
+        class="border rounded-md px-3 pr-10 py-2 h-11 min-w-[170px] text-sm w-full
+               sm:px-3 sm:pr-10 sm:py-3 sm:h-11 sm:text-base"
         :value="filters.room"
         @change="emitChange('room', $event.target.value)">
-        <option value="">Toutes</option>
+        <option value="">All</option>
         <option
           v-for="r in rooms"
           :key="r"
@@ -38,7 +40,8 @@
       <label class="text-xs text-gray-500 mb-1">Status</label>
       <select
         id="filter-status"
-        class="border rounded-md px-3 pr-10 py-3 h-11 text-base min-w-[170px]"
+        class="border rounded-md px-3 pr-10 py-2 h-11 min-w-[170px] text-sm w-full
+               sm:px-3 sm:pr-10 sm:py-3 sm:h-11 sm:text-base"
         :value="filters.status"
         @change="emitChange('status', $event.target.value)">
         <option value="">All</option>

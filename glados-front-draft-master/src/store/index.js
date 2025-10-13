@@ -11,6 +11,7 @@ export default createStore({
     },
     loading: false,
     error: null,
+    totalAll: 0,
   },
   getters: {
     rooms(state) {
@@ -49,7 +50,8 @@ export default createStore({
         room: "",
         status: "" 
       }
-    }
+    },
+    setTotalAll(state, n) { state.totalAll = n },
   },
   actions: {
     async loadEntities({ commit, state }) {
@@ -61,12 +63,17 @@ export default createStore({
         if (state.filters.room) params.room = state.filters.room
         if (state.filters.status) params.status = state.filters.status
 
-        const data = await coreApi.glados.getEntities(params)
+        const [data, all] = await Promise.all([
+          coreApi.glados.getEntities(params),
+          coreApi.glados.getEntities({})     // unfiltered for total
+        ])
         commit("setEntities", data)
+        commit("setTotalAll", Array.isArray(all) ? all.length : 0)
       } catch (err) {
         console.error(err)
         commit("setError", err?.data || err)
         commit("setEntities", [])
+        commit("setTotalAll", 0)
       } finally {
         commit("setLoading", false)
       }
