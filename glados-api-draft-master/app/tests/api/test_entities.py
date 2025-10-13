@@ -199,3 +199,34 @@ def test_get_entity_by_id_not_found(client):
     resp = client.get("/entities/00000000-0000-0000-0000-0000000000aa")
     assert resp.status_code == 404
     assert resp.json == {"error": "not_found", "message": "Resource not found."}
+
+
+def test_create_entity(client, entities, mocker):
+    payload = {
+        "name": "Desk Switch",
+        "type": "switch",
+        "status": "off",
+        "value": None,
+        "room": "Living Room"  # existing from fixture
+    }
+    resp = client.post("/entities", json=payload)
+    assert resp.status_code == 201
+    body = resp.json
+    assert body["name"] == "Desk Switch"
+    assert body["type"] == "switch"
+    assert body["status"] == "off"
+    assert body["room"] == "Living Room"
+    assert body["id"] is not None
+    assert body["created_at"] == mocker.ANY
+
+def test_create_entity_invalid_status(client):
+    payload = {"name": "Bad One", "type": "light", "status": "nope"}
+    resp = client.post("/entities", json=payload)
+    assert resp.status_code == 422
+    assert resp.json == {"errors": {"status": ["Must be one of: on, off, unavailable."]}}
+
+def test_create_entity_room_not_found(client):
+    payload = {"name": "Unknown Room Device", "type": "light", "status": "on", "room": "Garage"}
+    resp = client.post("/entities", json=payload)
+    assert resp.status_code == 422
+    assert resp.json == {"errors": {"room": ["Unknown room."]}}

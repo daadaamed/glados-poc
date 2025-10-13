@@ -27,6 +27,20 @@ class EntitySerializer(ma.Schema):
             "room"
         ]
 
+class EntityCreateRequestSerializer(ma.Schema):
+    name = fields.String(required=True)
+    type = fields.String(required=True, validate=validate.OneOf([x.name for x in constants.EntityType]))
+    status = fields.String(required=True, validate=validate.OneOf([x.name for x in constants.EntityStatus]))
+    value = fields.String(required=False, allow_none=True)
+    room = fields.String(required=False)  # by name
 
+class EntityUpdateRequestSerializer(ma.Schema):
+    name = fields.String(required=False)
+    type = fields.String(required=False, validate=validate.OneOf([x.name for x in constants.EntityType]))
+    status = fields.String(required=False, validate=validate.OneOf([x.name for x in constants.EntityStatus]))
+    value = fields.String(required=False, allow_none=True)
+    room = fields.String(required=False)
+
+    
 class EntityResponseSerializer(EntitySerializer):
     pass
