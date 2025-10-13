@@ -12,6 +12,12 @@ export default createStore({
     loading: false,
     error: null,
     totalAll: 0,
+    toast: {
+      show: false,
+      type: "success",
+      title: "",
+      message: ""
+    }
   },
   getters: {
     rooms(state) {
@@ -52,6 +58,17 @@ export default createStore({
       }
     },
     setTotalAll(state, n) { state.totalAll = n },
+    showToast(state, { type, title, message }) {
+      state.toast = {
+        show: true,
+        type,
+        title,
+        message 
+      }
+    },
+    hideToast(state) {
+      state.toast.show = false
+    }
   },
   actions: {
     async loadEntities({ commit, state }) {
@@ -74,6 +91,12 @@ export default createStore({
         commit("setError", err?.data || err)
         commit("setEntities", [])
         commit("setTotalAll", 0)
+        commit("showToast", {
+          type: "error",
+          title: "Failed to load entities",
+          message: "Please try again"
+        })
+        setTimeout(() => commit("hideToast"), 3000)
       } finally {
         commit("setLoading", false)
       }
@@ -81,20 +104,69 @@ export default createStore({
 
     async createEntity({ dispatch, commit }, payload) {
       commit("setError", null)
-      await coreApi.glados.createEntity(payload)
-      await dispatch("loadEntities")
+      try {
+        await coreApi.glados.createEntity(payload)
+        await dispatch("loadEntities")
+        // ADD THIS:
+        commit("showToast", {
+          type: "success",
+          title: "Entity created",
+          message: `${payload.name} was created successfully`
+        })
+        setTimeout(() => commit("hideToast"), 3000)
+      } catch (err) {
+        commit("showToast", {
+          type: "error",
+          title: "Failed to create entity",
+          message: err?.response?.data?.errors ? "Check form fields" : "Please try again"
+        })
+        setTimeout(() => commit("hideToast"), 3000)
+        throw err // Re-throw so Dashboard knows it failed
+      }
     },
 
     async updateEntity({ dispatch, commit }, { id, payload }) {
       commit("setError", null)
-      await coreApi.glados.updateEntity(id, payload)
-      await dispatch("loadEntities")
+      try {
+        await coreApi.glados.updateEntity(id, payload)
+        await dispatch("loadEntities")
+        commit("showToast", {
+          type: "success",
+          title: "Entity updated",
+          message: `${payload.name} was updated successfully`
+        })
+        setTimeout(() => commit("hideToast"), 3000)
+      } catch (err) {
+        commit("showToast", {
+          type: "error",
+          title: "Failed to update entity",
+          message: "Please try again"
+        })
+        setTimeout(() => commit("hideToast"), 3000)
+        throw err
+      }
     },
 
     async deleteEntity({ dispatch, commit }, id) {
       commit("setError", null)
-      await coreApi.glados.deleteEntity(id)
-      await dispatch("loadEntities")
+      try {
+        await coreApi.glados.deleteEntity(id)
+        await dispatch("loadEntities")
+        commit("showToast", {
+          type: "success",
+          title: "Entity deleted",
+          message: "Entity was deleted successfully"
+        })
+        setTimeout(() => commit("hideToast"), 3000)
+      } catch (err) {
+        commit("showToast", {
+          type: "error",
+          title: "Failed to delete entity",
+          message: "Please try again"
+        })
+        setTimeout(() => commit("hideToast"), 3000)
+        throw err
+      }
     }
   },
   modules: {},

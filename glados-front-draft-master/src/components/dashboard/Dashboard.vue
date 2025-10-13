@@ -116,20 +116,29 @@ export default {
     closeForm() { this.showForm = false; this.editing = null },
 
     async saveEntity(payload) {
-      if (this.editing) {
-        await this.$store.dispatch("updateEntity", {
-          id: this.editing.id,
-          payload 
-        })
-      } else {
-        await this.$store.dispatch("createEntity", payload)
+      try {
+        if (this.editing) {
+          await this.$store.dispatch("updateEntity", {
+            id: this.editing.id,
+            payload
+          })
+        } else {
+          await this.$store.dispatch("createEntity", payload)
+        }
+        this.closeForm() 
+      } catch (err) {
+        // Toast already shown by store action
+        // Keep form open so user can fix errors
       }
-      this.closeForm()
     },
 
     async confirmDelete(entity) {
       if (window.confirm(`Delete "${entity.name}"?`)) {
-        await this.$store.dispatch("deleteEntity", entity.id)
+        try {
+          await this.$store.dispatch("deleteEntity", entity.id)
+        } catch (err) {
+          // Toast already shown by store action
+        }
       }
     }
   }
