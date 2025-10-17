@@ -45,13 +45,39 @@
     </div>
     <div
       v-else
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
-      <EntityCard
-        v-for="e in filteredEntities"
-        :key="e.id"
-        :entity="e"
-        @edit="openEdit"
-        @delete="confirmDelete" />
+      class="flex flex-col gap-4">
+      <div
+        v-for="(items, room) in groupedByRoom"
+        :key="room"
+        class="rounded-lg border overflow-hidden bg-white">
+    
+        <!-- Room header / toggle -->
+        <button
+          class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50"
+          @click="toggleRoom(room)">
+          <div class="flex items-center gap-2">
+            <span class="font-semibold">{{ room }}</span>
+            <span class="text-xs text-gray-500">({{ items.length }})</span>
+          </div>
+          <span :class="['transition-transform', isOpen(room) ? 'rotate-0' : '-rotate-90']">
+            ▾
+          </span>
+        </button>
+
+        <!-- Room grid -->
+        <div
+          v-show="isOpen(room)"
+          class="px-4 pb-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+            <EntityCard
+              v-for="e in items"
+              :key="e.id"
+              :entity="e"
+              @edit="openEdit"
+              @delete="confirmDelete" />
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Modal -->
@@ -86,6 +112,7 @@ export default {
     return {
       showForm: false,
       editing: null,
+      openByRoom: {}
     }
   },
   created() {
@@ -102,7 +129,20 @@ export default {
       const onShown = this.onCountShown
       const entitiesWord = shown === 1 ? "entity" : "entities"
       return `Viewing ${shown} of ${total} ${entitiesWord} • ${onShown} on`
-    }
+    },
+    groupedByRoom() {
+      const map = {}
+      const label = e => e.room || "Unknown room"
+      this.filteredEntities.forEach(e => {
+        const r = label(e)
+        if (!map[r]) map[r] = []
+        map[r].push(e)
+      })
+      // return sorted by room name
+      return Object.fromEntries(
+        Object.keys(map).sort().map(k => [k, map[k]])
+      )
+    },
   },
   methods: {
     onFilterChange({ key, value }) { this.$store.commit("setFilter", {
@@ -138,6 +178,20 @@ export default {
           await this.$store.dispatch("deleteEntity", entity.id)
         } catch (err) {
           // Toast already shown by store action
+        }
+      }
+    },
+    isOpen(room) {
+      // default to open if not set
+      return this.openByRoom[room] !== false
+    },
+    toggleRoom(room) {
+      if (this.$set) {
+        this.$set(this.openByRoom, room, !this.isOpen(room))
+      } else {
+        this.openByRoom = {
+          ...this.openByRoom,
+          [room]: !this.isOpen(room)
         }
       }
     }
