@@ -21,6 +21,8 @@
 
 - Cards for each entity (type, status, value, room, last updated)
 
+- Group entities by room in the UI
+
 - Filters: Type • Room • Status
 
 - Responsive, mobile-friendly filter bar
